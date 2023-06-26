@@ -17,13 +17,11 @@ class UserController extends Controller
         
         $users = User::all(); // replace this with Eloquent statement
 
+        $users = User::whereNotNull('email_verified_at')
+                    ->orderBy('created_at','asc')
+                    ->limit(3)
+                    ->get();
         
-        $user = User::where('email_verified_at',true)
-                ->orderBy('created_at', 'desc')
-                ->limit(3)
-                ->get();
-        
-        dd($user);
         return view('users.index', compact('users'));
     }
 
