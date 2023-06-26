@@ -7,16 +7,23 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(User $user)
     {
         // TASK: turn this SQL query into Eloquent
         // select * from users
         //   where email_verified_at is not null
         //   order by created_at desc
         //   limit 3
-
+        
         $users = User::all(); // replace this with Eloquent statement
 
+        
+        $user = User::where('email_verified_at',true)
+                ->orderBy('created_at', 'desc')
+                ->limit(3)
+                ->get();
+        
+        dd($user);
         return view('users.index', compact('users'));
     }
 
