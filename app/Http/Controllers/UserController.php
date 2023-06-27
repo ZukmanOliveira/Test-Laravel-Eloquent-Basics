@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Spatie\FlareClient\Http\Exceptions\NotFound;
 
 class UserController extends Controller
 {
@@ -15,7 +17,7 @@ class UserController extends Controller
         //   order by created_at desc
         //   limit 3
         
-        $users = User::all(); // replace this with Eloquent statement
+       // replace this with Eloquent statement
 
         $users = User::whereNotNull('email_verified_at')
                     ->orderBy('created_at','asc')
@@ -25,10 +27,14 @@ class UserController extends Controller
         return view('users.index', compact('users'));
     }
 
-    public function show($userId)
+    public function show(User $user,$userId)
     {
-        $user = NULL; // TASK: find user by $userId or show "404 not found" page
-
+        try {
+            $user = User::findOrFail($userId); // TASK: find user by $userId or show "404 not found" page
+                        
+        } catch (ModelNotFoundException $exception) {
+            abort(404);
+        }
         return view('users.show', compact('user'));
     }
 
