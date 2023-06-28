@@ -2,12 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Morningnews extends Model
 {
-    use HasFactory;
+    protected $table = 'Morning_show';
 
     protected $fillable = ['title', 'news_text'];
 }
