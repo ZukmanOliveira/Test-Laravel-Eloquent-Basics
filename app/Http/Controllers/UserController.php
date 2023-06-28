@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
-use Spatie\FlareClient\Http\Exceptions\NotFound;
+use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+
 
 class UserController extends Controller
 {
@@ -27,7 +28,7 @@ class UserController extends Controller
         return view('users.index', compact('users'));
     }
 
-    public function show(User $user,$userId)
+    public function show($userId)
     {
         try {
             $user = User::findOrFail($userId); // TASK: find user by $userId or show "404 not found" page
@@ -38,11 +39,23 @@ class UserController extends Controller
         return view('users.show', compact('user'));
     }
 
-    public function check_create($name, $email)
+    public function check_create($name, $email, Request $request)
     {
         // TASK: find a user by $name and $email
+        $user = User::where('name', $name)
+                    ->where('email', $email)
+                    ->first();
+        ;
         //   if not found, create a user with $name, $email and random password
-        $user = NULL;
+        if(!$user){
+            $user = new User;
+            $user->name = $name;
+            $user->email = $email;
+            $user->password = bcrypt(Str::random(8));
+            
+            $user->save();
+            return response('usuario criado com sucesso');
+        }
 
         return view('users.show', compact('user'));
     }
