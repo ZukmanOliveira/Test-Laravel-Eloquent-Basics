@@ -4,34 +4,58 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(User $user)
     {
         // TASK: turn this SQL query into Eloquent
         // select * from users
         //   where email_verified_at is not null
         //   order by created_at desc
         //   limit 3
+        
+       // replace this with Eloquent statement
 
-        $users = User::all(); // replace this with Eloquent statement
-
+        $users = User::whereNotNull('email_verified_at')
+                    ->orderBy('created_at','asc')
+                    ->limit(3)
+                    ->get();
+        
         return view('users.index', compact('users'));
     }
 
     public function show($userId)
     {
-        $user = NULL; // TASK: find user by $userId or show "404 not found" page
-
+        try {
+            $user = User::findOrFail($userId); // TASK: find user by $userId or show "404 not found" page
+                        
+        } catch (ModelNotFoundException $exception) {
+            abort(404);
+        }
         return view('users.show', compact('user'));
     }
 
-    public function check_create($name, $email)
+    public function check_create($name, $email, Request $request)
     {
         // TASK: find a user by $name and $email
+        $user = User::where('name', $name)
+                    ->where('email', $email)
+                    ->first();
+        ;
         //   if not found, create a user with $name, $email and random password
-        $user = NULL;
+        if(!$user){
+            $user = new User;
+            $user->name = $name;
+            $user->email = $email;
+            $user->password = bcrypt(Str::random(8));
+            
+            $user->save();
+            return response('usuario criado com sucesso');
+        }
 
         return view('users.show', compact('user'));
     }

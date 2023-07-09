@@ -10,11 +10,11 @@ class ProjectController extends Controller
 {
     public function store(Request $request)
     {
-        // TASK: Currently this statement fails. Fix the underlying issue.
-        Project::create([
+    //TASK: Currently this statement fails. Fix the underlying issue.
+        $projects = Project::create([
             'name' => $request->name
         ]);
-
+        
         return redirect('/')->with('success', 'Project created');
     }
 
